@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Binary Christmas Tree</title>
+  <style>
+    :root {
+      color-scheme: dark;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: radial-gradient(circle at top, #172029, #05090f 65%);
+      font-family: 'Courier New', Courier, monospace;
+      color: #bde6ff;
+    }
+
+    h1 {
+      margin-bottom: 0.2rem;
+      font-size: clamp(1.6rem, 3vw, 2.6rem);
+      letter-spacing: 0.05em;
+    }
+
+    p {
+      margin-top: 0;
+      margin-bottom: 1.5rem;
+      color: #83c7ff;
+    }
+
+    .scene {
+      perspective: 900px;
+      margin: 40px 0;
+    }
+
+    .tree {
+      transform-style: preserve-3d;
+      animation: spin 14s linear infinite;
+      filter: drop-shadow(0 0 12px rgba(95, 173, 255, 0.4));
+    }
+
+    .digit {
+      display: inline-block;
+      font-weight: 600;
+    }
+
+    .digit.foliage {
+      color: #29f37f;
+      text-shadow: 0 0 8px rgba(41, 243, 127, 0.6);
+    }
+
+    .digit.light {
+      text-shadow: 0 0 12px currentColor;
+    }
+
+    .digit.trunk {
+      color: #c69155;
+      text-shadow: 0 0 8px rgba(198, 145, 85, 0.55);
+    }
+
+    pre {
+      margin: 0;
+      font-size: clamp(0.65rem, 2vw, 1.05rem);
+      line-height: 1.2;
+      text-align: center;
+      white-space: pre;
+    }
+
+    @keyframes spin {
+      from {
+        transform: rotateY(0deg);
+      }
+
+      to {
+        transform: rotateY(360deg);
+      }
+    }
+
+  </style>
+</head>
+
+<body>
+  <h1>Merry Christmas</h1>
+  <div class="scene">
+    <div class="tree">
+      <pre id="tree"></pre>
+    </div>
+  </div>
+  <div>by dokko</div>
+
+  <script>
+    const treeElement = document.getElementById('tree');
+    const lightColors = ['#f54291', '#ffbf69', '#f8ff6e', '#90f7ec', '#c77dff', '#ff7eb9'];
+
+    function buildTree() {
+      const height = 18;
+      const baseWidth = height * 2 - 1;
+      const rows = [];
+
+      for (let level = 1; level <= height; level++) {
+        const rowWidth = level * 2 - 1;
+        const padding = Math.floor((baseWidth - rowWidth) / 2);
+        const digits = createBinaryRow(level)
+          .map(renderDigit)
+          .join('');
+        rows.push(' '.repeat(padding) + digits + ' '.repeat(padding));
+      }
+
+      const trunkWidth = 3;
+      const trunkHeight = 3;
+      const trunkPadding = Math.floor((baseWidth - trunkWidth) / 2);
+      const trunkRow =
+        ' '.repeat(trunkPadding) +
+        createTrunk(trunkWidth) +
+        ' '.repeat(trunkPadding);
+      for (let i = 0; i < trunkHeight; i++) {
+        rows.push(trunkRow);
+      }
+
+      return rows.join('\n');
+    }
+
+    function createBinaryRow(level) {
+      const half = [];
+      for (let i = 0; i < level; i++) {
+        half.push(Math.random() > 0.25 ? '0' : '1');
+      }
+      const mirrored = half.slice(0, -1).reverse();
+      return half.concat(mirrored);
+    }
+
+    function renderDigit(value) {
+      if (value === '1') {
+        const color = lightColors[Math.floor(Math.random() * lightColors.length)];
+        return `<span class="digit light" style="color: ${color};">1</span>`;
+      }
+      return '<span class="digit foliage">0</span>';
+    }
+
+    function createTrunk(width) {
+      let str = '';
+      for (let i = 0; i < width; i++) {
+        str += '<span class="digit trunk">1</span>';
+      }
+      return str;
+    }
+
+    function renderTree() {
+      treeElement.innerHTML = buildTree();
+    }
+
+    renderTree();
+    setInterval(renderTree, 1800);
+  </script>
+</body>
+
+</html>
